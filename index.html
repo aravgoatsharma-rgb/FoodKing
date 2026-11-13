@@ -1,4 +1,565 @@
+<!DOCTYPE html
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodExpress | Delicious Food Delivered</title>
+<style>
+:root {
+  --gold: #e8b84b;
+  --black: #090909;
+  --panel: #171717;
+  --muted: #aaa;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--black);
+  color: white;
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 18px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111;
+  border-bottom: 1px solid #292929;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.logo { font-size: 25px; font-weight: 900; }
+.logo span { color: var(--gold); }
+header button, .gold-btn {
+  background: var(--gold);
+  color: #111;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.hero {
+  padding: 65px 7%;
+  background: linear-gradient(90deg, #090909, #17130b);
+}
+.hero h1 {
+  font-size: clamp(35px, 6vw, 65px);
+  margin: 0 0 15px;
+}
+.hero h1 span { color: var(--gold); }
+.hero p { color: #ccc; font-size: 17px; }
+.hero button { margin-top: 15px; }
+.section { padding: 30px 6%; }
+.section h2 { font-size: 27px; }
+.section h2 span { color: var(--gold); }
+.search {
+  width: 100%;
+  padding: 15px;
+  background: #191919;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 9px;
+  font-size: 16px;
+}
+.categories {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 18px 0;
+}
+.categories button {
+  flex-shrink: 0;
+  background: #202020;
+  color: white;
+  border: 1px solid #444;
+  padding: 11px 17px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+.categories button.active {
+  background: var(--gold);
+  color: black;
+  border-color: var(--gold);
+}
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.food-card {
+  background: var(--panel);
+  border: 1px solid #292929;
+  border-radius: 13px;
+  overflow: hidden;
+}
+.food-card img {
+  width: 100%;
+  height: 165px;
+  object-fit: cover;
+  background: #222;
+}
+.food-info { padding: 15px; }
+.food-info h3 { margin: 0 0 8px; }
+.food-info p {
+  color: var(--muted);
+  font-size: 13px;
+  min-height: 32px;
+}
+.food-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.price { color: var(--gold); font-weight: bold; }
+.add-btn {
+  background: var(--gold);
+  border: none;
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.cart-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: min(420px, 100%);
+  background: #141414;
+  z-index: 30;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: -5px 0 25px #000;
+  display: none;
+}
+.cart-panel h2 { color: var(--gold); }
+.close {
+  float: right;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 9px 13px;
+  border-radius: 6px;
+}
+.cart-item {
+  border-bottom: 1px solid #333;
+  padding: 13px 0;
+}
+.cart-item-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.quantity button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+}
+.total {
+  font-size: 21px;
+  color: var(--gold);
+  margin: 20px 0;
+}
+.checkout-btn {
+  width: 100%;
+  background: var(--gold);
+  color: black;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: #000c;
+  z-index: 40;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+.modal {
+  background: #171717;
+  width: min(480px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  border-radius: 13px;
+}
+.modal h2 { color: var(--gold); }
+.modal input, .modal textarea, .modal select {
+  width: 100%;
+  margin: 8px 0 15px;
+  padding: 13px;
+  border-radius: 7px;
+  border: 1px solid #444;
+  background: #252525;
+  color: white;
+  font-size: 15px;
+}
+.modal label { color: #ddd; }
+footer {
+  text-align: center;
+  color: #999;
+  padding: 35px 15px;
+  border-top: 1px solid #292929;
+  margin-top: 35px;
+}
+.success { text-align: center; padding: 20px 0; }
+.success h2 { color: var(--gold); }
+.empty { color: #aaa; padding: 20px 0; }
+@media(max-width:600px) {
+  header { padding: 14px 4%; }
+  .logo { font-size: 21px; }
+  .hero { padding: 45px 6%; }
+  .section { padding: 23px 5%; }
+  .food-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .food-card img { height: 120px; }
+  .food-info { padding: 10px; }
+  .food-info h3 { font-size: 15px; }
+  .food-info p { font-size: 12px; }
+  .add-btn { padding: 8px; font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">FOOD<span>EXPRESS</span></div>
+  <button onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<section class="hero">
+  <h1>Good Food.<br><span>Great Moments.</span></h1>
+  <p>Discover delicious food, refreshing drinks and more.</p>
+  <button class="gold-btn" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+    Explore Menu
+  </button>
+</section>
+
+<section class="section" id="menu">
+  <h2>Explore Our <span>Menu</span></h2>
+  <input class="search" id="search" placeholder="Search burgers, Chinese, coffee..." oninput="renderMenu()">
+
+  <div class="categories" id="categories">
+    <button class="active" onclick="setCategory('All',this)">All</button>
+    <button onclick="setCategory('Chinese',this)">🥡 Chinese</button>
+    <button onclick="setCategory('Burgers',this)">🍔 Burgers</button>
+    <button onclick="setCategory('Milkshakes',this)">🥤 Milkshakes</button>
+    <button onclick="setCategory('Coffee',this)">☕ Coffee</button>
+  </div>
+
+  <div class="food-grid" id="foodGrid"></div>
+</section>
+
+<div class="cart-panel" id="cartPanel">
+  <button class="close" onclick="closeCart()">Close ✕</button>
+  <h2>Your Cart</h2>
+  <div id="cartItems"></div>
+  <div class="total" id="cartTotal">Total: ₹0</div>
+  <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>
+</div>
+
+<div class="modal-bg" id="checkout">
+  <div class="modal" id="checkoutBox">
+    <button class="close" onclick="closeCheckout()">Close ✕</button>
+    <h2>Complete Your Order</h2>
+
+    <form id="orderForm">
+      <label>Your Name</label>
+      <input id="customerName" maxlength="100" required placeholder="Enter your name">
+
+      <label>Mobile Number</label>
+      <input id="customerPhone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required placeholder="10-digit mobile number">
+
+      <label>Delivery Address</label>
+      <textarea id="customerAddress" minlength="5" maxlength="1000" required placeholder="Enter your complete address"></textarea>
+
+      <label>Payment Method</label>
+      <select id="payment" required>
+        <option value="Cash on Delivery">Cash on Delivery</option>
+        <option value="Pay at Store">Pay at Store</option>
+      </select>
+
+      <p id="checkoutTotal" class="total"></p>
+      <button class="checkout-btn" type="submit">Place Order</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">FOOD<span>EXPRESS</span></div>
+  <p>Fresh Food · Great Taste · Happy Moments</p>
+  <p>© 2026 FoodExpress. All rights reserved.</p>
+</footer>
+
+<script>
+// ========================================
+// 1. SUPABASE CONNECTION
+// ========================================
+// Replace these two values with your own
+// Supabase Project URL and PUBLIC publishable
+// key (or legacy anon key).
+// Never put a service_role or secret key here.
+
+const SUPABASE_URL = "https://tfszddfexjlfxmdsnyjb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_YTulZXaCJoAaczJU6FyB0Q_Sy1XGsKz";
+
+// ========================================
+// 2. FOOD MENU
+// ========================================
+
+const foods = [
+  // CHINESE
+  {id:1,name:"Veg Hakka Noodles",category:"Chinese",price:149,description:"Classic stir-fried vegetable noodles.",image:"https://images.unsplash.com/photo-1585032226651-759b368d7246?w=700"},
+  {id:2,name:"Schezwan Noodles",category:"Chinese",price:169,description:"Spicy noodles with Schezwan sauce.",image:"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=700"},
+  {id:3,name:"Veg Fried Rice",category:"Chinese",price:139,description:"Fried rice with fresh vegetables.",image:"https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=700"},
+  {id:4,name:"Schezwan Fried Rice",category:"Chinese",price:159,description:"Hot and spicy Schezwan fried rice.",image:"https://images.unsplash.com/photo-1512058564366-18510be2db19?w=700"},
+  {id:5,name:"Veg Manchurian",category:"Chinese",price:159,description:"Crispy vegetable balls in Manchurian sauce.",image:"https://images.unsplash.com/photo-1563245372-f21724e3856d?w=700"},
+  {id:6,name:"Chilli Paneer",category:"Chinese",price:189,description:"Paneer tossed with peppers and sauces.",image:"https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=700"},
+  {id:7,name:"Veg Momos",category:"Chinese",price:99,description:"Steamed dumplings served with chutney.",image:"https://images.unsplash.com/photo-1563245372-f21724e3856d?w=700"},
+  {id:8,name:"Crispy Spring Rolls",category:"Chinese",price:129,description:"Crunchy rolls with vegetable filling.",image:"https://images.unsplash.com/photo-1544025162-d76694265947?w=700"},
+
+  // BURGERS
+  {id:9,name:"Classic Veg Burger",category:"Burgers",price:99,description:"Fresh vegetables with a crispy patty.",image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700"},
+  {id:10,name:"Cheese Burger",category:"Burgers",price:129,description:"A delicious burger loaded with cheese.",image:"https://images.unsplash.com/photo-1553979459-d2229ba7433a?w=700"},
+  {id:11,name:"Paneer Tikka Burger",category:"Burgers",price:159,description:"Spiced paneer tikka in a soft bun.",image:"https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=700"},
+  {id:12,name:"Spicy Mexican Burger",category:"Burgers",price:149,description:"A spicy burger with Mexican flavours.",image:"https://images.unsplash.com/photo-1550547660-d9450f859349?w=700"},
+  {id:13,name:"Double Cheese Burger",category:"Burgers",price:179,description:"Double patty with extra cheese.",image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700"},
+
+  // MILKSHAKES
+  {id:14,name:"Chocolate Milkshake",category:"Milkshakes",price:119,description:"Rich and creamy chocolate shake.",image:"https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=700"},
+  {id:15,name:"Oreo Milkshake",category:"Milkshakes",price:139,description:"Creamy shake blended with Oreo cookies.",image:"https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=700"},
+  {id:16,name:"Strawberry Milkshake",category:"Milkshakes",price:119,description:"Sweet strawberry flavoured milkshake.",image:"https://images.unsplash.com/photo-1553787499-6f913324f9ce?w=700"},
+  {id:17,name:"Vanilla Milkshake",category:"Milkshakes",price:109,description:"Smooth and classic vanilla shake.",image:"https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=700"},
+  {id:18,name:"Mango Milkshake",category:"Milkshakes",price:129,description:"Refreshing mango flavoured shake.",image:"https://images.unsplash.com/photo-1553787499-6f913324f9ce?w=700"},
+
+  // COFFEE
+  {id:19,name:"Cold Coffee",category:"Coffee",price:99,description:"Chilled coffee with a creamy finish.",image:"https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=700"},
+  {id:20,name:"Cappuccino",category:"Coffee",price:119,description:"Espresso with steamed milk foam.",image:"https://images.unsplash.com/photo-1534778101976-62847782c213?w=700"},
+  {id:21,name:"Cafe Latte",category:"Coffee",price:129,description:"Smooth espresso and steamed milk.",image:"https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=700"},
+  {id:22,name:"Cafe Mocha",category:"Coffee",price:139,description:"Coffee blended with chocolate.",image:"https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=700"},
+  {id:23,name:"Espresso",category:"Coffee",price:89,description:"A small, bold shot of coffee.",image:"https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=700"}
+];
+
+let cart = [];
+let selectedCategory = "All";
+
+function money(amount) {
+  return "₹" + Number(amount).toFixed(2);
+}
+
+function setCategory(category, button) {
+  selectedCategory = category;
+  document.querySelectorAll(".categories button").forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+  renderMenu();
+}
+
+function renderMenu() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const filtered = foods.filter(food => {
+    const matchesCategory = selectedCategory === "All" || food.category === selectedCategory;
+    const matchesSearch = food.name.toLowerCase().includes(search) ||
+      food.category.toLowerCase().includes(search);
+    return matchesCategory && matchesSearch;
+  });
+
+  document.getElementById("foodGrid").innerHTML = filtered.length
+    ? filtered.map(food => `
+      <div class="food-card">
+        <img src="${food.image}" alt="${food.name}" loading="lazy">
+        <div class="food-info">
+          <h3>${food.name}</h3>
+          <p>${food.description}</p>
+          <div class="food-bottom">
+            <span class="price">${money(food.price)}</span>
+            <button class="add-btn" onclick="addToCart(${food.id})">+ Add</button>
+          </div>
+        </div>
+      </div>
+    `).join("")
+    : '<p class="empty">No matching food found.</p>';
+}
+
+// ========================================
+// 3. CART
+// ========================================
+
+function addToCart(id) {
+  const existing = cart.find(item => item.id === id);
+  if (existing) existing.qty++;
+  else cart.push({id, qty:1});
+  updateCart();
+}
+
+function changeQty(id, change) {
+  const item = cart.find(item => item.id === id);
+  if (!item) return;
+  item.qty += change;
+  if (item.qty <= 0) cart = cart.filter(x => x.id !== id);
+  updateCart();
+}
+
+function total() {
+  return cart.reduce((sum, item) => {
+    const food = foods.find(f => f.id === item.id);
+    return sum + food.price * item.qty;
+  }, 0);
+}
+
+function updateCart() {
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById("cartCount").textContent = count;
+
+  document.getElementById("cartItems").innerHTML = cart.length
+    ? cart.map(item => {
+      const food = foods.find(f => f.id === item.id);
+      return `
+        <div class="cart-item">
+          <div class="cart-item-row">
+            <strong>${food.name}</strong>
+            <span class="price">${money(food.price * item.qty)}</span>
+          </div>
+          <div class="quantity">
+            <button onclick="changeQty(${food.id},-1)">−</button>
+            ${item.qty}
+            <button onclick="changeQty(${food.id},1)">+</button>
+          </div>
+        </div>
+      `;
+    }).join("")
+    : '<p class="empty">Your cart is empty. Add something delicious!</p>';
+
+  document.getElementById("cartTotal").textContent = "Total: " + money(total());
+}
+
+function openCart() {
+  document.getElementById("cartPanel").style.display = "block";
+}
+function closeCart() {
+  document.getElementById("cartPanel").style.display = "none";
+}
+function openCheckout() {
+  if (!cart.length) {
+    alert("Please add food to your cart first.");
+    return;
+  }
+  document.getElementById("checkoutTotal").textContent = "Total: " + money(total());
+  closeCart();
+  document.getElementById("checkout").style.display = "flex";
+}
+function closeCheckout() {
+  document.getElementById("checkout").style.display = "none";
+}
+
+// ========================================
+// 4. SEND ORDER TO SUPABASE
+// ========================================
+
+document.getElementById("orderForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  if (!cart.length) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  if (SUPABASE_URL === "YOUR_PROJECT_URL" ||
+      SUPABASE_KEY === "YOUR_PUBLISHABLE_KEY") {
+    alert("Please add your Supabase Project URL and public publishable key in the code first.");
+    return;
+  }
+
+  const submitButton = this.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = "Placing Order...";
+
+  const order = {
+    customer_name: document.getElementById("customerName").value.trim(),
+    customer_phone: document.getElementById("customerPhone").value.trim(),
+    delivery_address: document.getElementById("customerAddress").value.trim(),
+    payment_method: document.getElementById("payment").value,
+    items: cart.map(item => {
+      const food = foods.find(f => f.id === item.id);
+      return {
+        id: food.id,
+        name: food.name,
+        price: food.price,
+        quantity: item.qty
+      };
+    }),
+    total: total(),
+    status: "pending"
+  };
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/orders",
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(order)
+      }
+    );
+
+    if (!response.ok) {
+      let message = "Order could not be saved.";
+      try {
+        const error = await response.json();
+        message = error.message || error.details || message;
+      } catch (_) {}
+      throw new Error(message);
+    }
+
+    cart = [];
+    updateCart();
+
+    document.getElementById("checkoutBox").innerHTML = `
+      <div class="success">
+        <div style="font-size:55px">✓</div>
+        <h2>Order Placed!</h2>
+        <p>Your order has been sent to FoodExpress.</p>
+        <p>Reference: <strong>FE${Date.now().toString().slice(-8)}</strong></p>
+        <p>Status: <strong class="price">Pending confirmation</strong></p>
+        <button class="checkout-btn" onclick="finishOrder()">Continue Shopping</button>
+      </div>
+    `;
+
+  } catch (error) {
+    alert("Order failed: " + error.message);
+    submitButton.disabled = false;
+    submitButton.textContent = "Place Order";
+  }
+});
+
+function finishOrder() {
+  location.reload();
+}
+
+// Start the website
+renderMenu();
+updateCart();
+</script>
+</body>
+</html>
+>
 <html>
 <head>
 <!DOCTYPE html>
